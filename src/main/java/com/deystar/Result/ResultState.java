@@ -1,10 +1,10 @@
 package com.deystar.Result;
 
+import com.deystar.Zip.Entity.FileListBean;
+
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * @Author YeungLuhyun
@@ -15,18 +15,35 @@ public class ResultState {
     /**
      * 存放压缩包包名的list。只有线程结束才能add到这里
      */
-    private volatile static List<String> resultList = new ArrayList<>();
+    private static final List<FileListBean> resultList = new ArrayList<>();
+    private static final List<FileListBean> errorList = new ArrayList<>();
 
+    private static final Queue<String> resultPrint = new LinkedBlockingQueue<>();
 
-    public static synchronized void success(String path) {
+    public static synchronized void success(FileListBean bean) {
+        resultPrint.add("success:"+bean.getParent()+" -> "+bean.getZipName());
+        resultList.add(bean);
+    }
 
-        if (!new File(path).exists()) {
-            System.out.println(path + "没压缩完");
-            return;
+    public static synchronized void error(FileListBean bean) {
+        resultPrint.add("error:"+bean.getParent()+" -> "+bean.getZipName());
+        errorList.add(bean);
+    }
+
+    public static Integer errorNum() {
+        return errorList.size();
+    }
+
+    public static List<FileListBean> allError() {
+        return errorList;
+    }
+
+    public static String getResult(){
+        String result = null;
+        if (!resultPrint.isEmpty()){
+            result = resultPrint.poll();
         }
-        resultList.add(path);
-
-
+        return result;
     }
 
 
