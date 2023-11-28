@@ -14,7 +14,7 @@ import java.net.URL;
  * @author Ming Yeung Luhyun (杨名 字 露煊）
  **/
 public  class ZipCommandBuilder  {
-    protected StringBuilder command;
+    protected StringBuilder command ;
 
 
 
@@ -24,12 +24,13 @@ public  class ZipCommandBuilder  {
      * @return
      */
     public ZipCommandBuilder outPut(Integer superThreadNum, String zipName) {
-        if (superThreadNum == null || superThreadNum < 1 || zipName == null || zipName.trim().isEmpty()) {
-            throw new ArgumentException("superThreadNum:"+superThreadNum+"zipName:"+zipName, ArgumentExceptionEnums.ARGUMENT_NULL);
+        if (superThreadNum == null || superThreadNum < 1) {
+            superThreadNum = Runtime.getRuntime().availableProcessors();
         }
         superThreadNum = Math.max(superThreadNum,1);
         String command = " -mmt=:superThread -tzip a \":output\"";
         //2. Create a command of zip
+        if (!zipName.endsWith(".zip")) zipName+=".zip";
         this.command.append(command.replace(":superThread", superThreadNum + "").replace(":output", zipName));
         return this;
     }
@@ -68,6 +69,6 @@ public  class ZipCommandBuilder  {
      * Not using the built-in 7zip
      */
     public ZipCommandBuilder(){
-
+        this.command = new StringBuilder();
     }
 }

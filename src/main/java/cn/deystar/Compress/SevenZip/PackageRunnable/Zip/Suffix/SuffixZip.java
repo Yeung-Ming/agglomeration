@@ -3,6 +3,7 @@ package cn.deystar.Compress.SevenZip.PackageRunnable.Zip.Suffix;
 import cn.deystar.Compress.Bean.FileListBean;
 import cn.deystar.Compress.SevenZip.PackageRunnable.Common.ZipServiceImpl;
 import cn.deystar.CompressArgument.CompressArgument;
+import cn.deystar.Const.SystemEnums;
 
 import java.util.concurrent.Callable;
 
@@ -12,8 +13,8 @@ import java.util.concurrent.Callable;
 public class SuffixZip extends ZipServiceImpl implements Callable<FileListBean> {
 
 
-    public SuffixZip(CompressArgument argument, FileListBean bean, String command) {
-        this.argument = argument;
+    public SuffixZip(SystemEnums system, FileListBean bean, String command) {
+        this.system = system;
         this.bean = bean;
         this.command = command;
     }
@@ -21,6 +22,6 @@ public class SuffixZip extends ZipServiceImpl implements Callable<FileListBean> 
 
     @Override
     public FileListBean call()  {
-        return  this.start(command);
+        return this.start();
     }
 }

@@ -1,13 +1,18 @@
 package cn.deystar.ScanUtil;
 
+
+
 import cn.deystar.Compress.Bean.FileListBean;
 import cn.deystar.CompressArgument.CompressArgument;
 import cn.deystar.CustomException.PathException.PathException;
 import cn.deystar.CustomException.PathException.PathExceptionEnums;
 import cn.hutool.core.util.IdUtil;
 
+
+
 import java.io.File;
 import java.util.*;
+import java.util.concurrent.LinkedTransferQueue;
 
 /**
  * @author Ming Yeung Luhyun (杨名 字露煊)
@@ -18,17 +23,17 @@ public class FileScan {
     private final Map<String, Integer> parentIndex = new HashMap<>();
 
     private final Set<String> nameSet = new HashSet<>();
-
-    private CompressArgument zipArgument;
+    Integer cf = 1;
+    private CompressArgument compressArgument;
 
     /**
-     * scan all the file from directory
+     * 扫描路径下的所有文件
      *
-     * @param files  a Directory
+     * @param dir
      */
-    public FileScan scan(List<File> files) {
-        if (files == null || files.isEmpty()) return null;
-        for (File file : files) {
+    public void scan(List<File> dir) {
+        if (dir == null || dir.isEmpty()) return;
+        for (File file : dir) {
             if (!file.exists() || !file.canRead()) continue;
             if (file.isDirectory()) {
                 scan(Arrays.asList(Objects.requireNonNull(file.listFiles())));
@@ -37,7 +42,6 @@ public class FileScan {
                 this.appFileIntoList(renameFile);
             }
         }
-        return this;
     }
 
     /***
@@ -62,13 +66,13 @@ public class FileScan {
         String[] parentStr = parent.contains("\\") ? parent.split("\\\\") : parent.split("/");
         parent = parentStr.length > 2 ? parentStr[parentStr.length - 2] + "_" + parentStr[parentStr.length - 1] : parentStr[parentStr.length - 1];
         if (!nameSet.add(parent)) {
-            int index = 1;
-            while (nameSet.add(parent + "(" + index + ")")) {
+            int index = cf;
+            while (!nameSet.add(parent + "(" + index + ")")) {
                 index++;
             }
             path += parent + "(" + index + ")";
         } else {
-            path += parent;
+            path += parent ;
         }
         return path;
 
@@ -81,13 +85,13 @@ public class FileScan {
      */
     private void appFileIntoList(File file) {
         String parent = file.getParent();
+        if (fileListBeans.size() > 1)  parent = parent + "_" + (cf + "");
         Long fileSize = file.length();
         FileListBean bean = null;
         Integer index = null;
         if (parentIndex.containsKey(parent) && (index = parentIndex.get(parent)) >= 0) {
             bean = fileListBeans.get(index);
-            if (bean.getTotalSize() > zipArgument.getFileMaxSize() || bean.getTotalSize() + fileSize > zipArgument.getFileMaxSize()) {
-                Integer cf = 1;
+            if (bean.getTotalSize() > compressArgument.getFileMaxSize() || bean.getTotalSize() + fileSize > compressArgument.getFileMaxSize()) {
                 while (parentIndex.containsKey(parent + "_" + (cf + ""))) {
                     cf++;
                 }
@@ -98,7 +102,7 @@ public class FileScan {
             bean = new FileListBean();
         }
         if (bean.getCompressName() == null) {
-            bean.setCompressName(this.genZipName(parent, zipArgument.getPackageStorage(), zipArgument.getNameAnonymity()));
+            bean.setCompressPathAndName(this.genZipName(parent, compressArgument.getOutPutPathAndName(), compressArgument.getNameAnonymity()));
         }
 
         bean.setSourceParent(parent);
@@ -110,14 +114,13 @@ public class FileScan {
             fileListBeans.set(parentIndex.get(parent), bean);
         } else {
             fileListBeans.add(bean);
-            parentIndex.put(parent, fileListBeans.size() - 1);
+            parentIndex.put(parent, fileListBeans.size() -1 );
         }
     }
 
 
     /**
-     * if the file`s name has space.
-     * the file`s name wille be renamed to no space name
+     * 如果文件名存在空格，就将文件重命名为没有空格的文件
      *
      * @return
      */
@@ -136,12 +139,14 @@ public class FileScan {
         return file;
     }
 
+    public Queue<FileListBean> getTasks() {
+        return new LinkedTransferQueue<>(fileListBeans);
+    }
 
     public List<FileListBean> getList(){
         return fileListBeans;
     }
-
-    public FileScan(CompressArgument zipArgument) {
-        this.zipArgument = zipArgument;
+    public FileScan(CompressArgument compressArgument) {
+        this.compressArgument = compressArgument;
     }
 }

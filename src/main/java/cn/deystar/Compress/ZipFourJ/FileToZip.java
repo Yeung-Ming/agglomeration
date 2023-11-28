@@ -24,7 +24,7 @@ public class FileToZip {
         try {
             ZipParameters zipParameters = new ZipParameters();
             zipParameters.setEncryptFiles(compressArgument.getEncryption() && compressArgument.getPassword() != null && !compressArgument.getPassword().trim().isEmpty());
-            zipFile = new ZipFile(bean.getCompressName());
+            zipFile = new ZipFile(bean.getCompressPathAndName());
             if (compressArgument.getEncryption() && compressArgument.getPassword() != null && !compressArgument.getPassword().trim().isEmpty()) {
                 zipParameters.setAesKeyStrength(AesKeyStrength.KEY_STRENGTH_256);
                 zipFile.setPassword(compressArgument.getPassword().toCharArray());
@@ -33,7 +33,7 @@ public class FileToZip {
             bean.setStatus(CompressStatus.SUCCESS);
         } catch (IOException e) {
             bean.setStatus(CompressStatus.ERROR);
-            File eFile = new File(bean.getCompressName());
+            File eFile = new File(bean.getCompressPathAndName());
             if (eFile.exists()) eFile.delete();
         } finally {
             if (zipFile != null) {

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author  YeungLuhyun
+ * @author YeungLuhyun
  **/
 
 public class FileListBean {
@@ -23,13 +23,15 @@ public class FileListBean {
     /**
      * compress package name
      */
-    private String compressName;
+    private String compressPathAndName;
 
+    private String compressName;
 
     private Long totalSize;
 
 
     private CompressStatus status;
+
     public FileListBean() {
         this.fileList = new ArrayList<>();
         this.totalSize = 0L;
@@ -59,12 +61,18 @@ public class FileListBean {
         this.fileList = fileLit;
     }
 
-    public String getCompressName() {
-        return compressName;
+    public String getCompressPathAndName() {
+        return compressPathAndName;
     }
 
-    public void setCompressName(String compressName) {
-        this.compressName = compressName;
+    public void setCompressPathAndName(String compressName) {
+        this.compressPathAndName = compressName;
+        String[] strs = compressName.replace("\\", "/").split("/");
+        this.compressName = strs[strs.length - 1];
+    }
+
+    public String getCompressName() {
+        return this.compressName;
     }
 
     public Long getTotalSize() {
@@ -80,7 +88,8 @@ public class FileListBean {
         return "{\"sourceParent\":\"" + sourceParent + "\"\n" +
                 "\"parent\":\"" + parent + "\"\n" +
                 "\"fileList\":" + fileList + "\n" +
-                "\"compressName\":" + compressName + "\n" +
+                "\"compressName\":\"" + compressName + "\"\n" +
+                "\"compressPathAndName\":" + compressPathAndName + "\"\n" +
                 "\"totalSize\":" + totalSize + "\n}";
     }
 

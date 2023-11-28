@@ -8,12 +8,12 @@ public class CompressArgument {
     /**
      * The path to be compressed
      */
-    private String originPath;
+    private String sourcePath;
 
     /**
      * compress file where storage
      */
-    private String packageStorage;
+    private String outPutPathAndName;
 
     /**
      * zip file encryption
@@ -32,27 +32,27 @@ public class CompressArgument {
      */
     private Long fileMaxSize; // The value`s unit is Byte
 
-    public String getOriginPath() {
-        return originPath;
+    public String getSourcePath() {
+        return sourcePath;
     }
 
-    public void setOriginPath(String originPath) {
-        this.originPath = originPath;
+    public void setSourcePath(String originPath) {
+        this.sourcePath = originPath;
     }
 
-    public String getPackageStorage() {
-        return packageStorage;
+    public String getOutPutPathAndName() {
+        return outPutPathAndName;
     }
 
-    public void setPackageStorage(String zipToPath) {
-        this.packageStorage = zipToPath;
+    public void setOutPutPathAndName(String zipToPath) {
+        this.outPutPathAndName = zipToPath;
     }
 
     public Boolean getEncryption() {
         return isEncryption;
     }
 
-    public void setEncryption(Boolean encryption) {
+    public void setEncryption(boolean encryption) {
         isEncryption = encryption;
     }
 
@@ -64,7 +64,7 @@ public class CompressArgument {
      *  The compress file names needs to be  anonymity
      * @param pathAnonymity
      */
-    public void setNameAnonymity(Boolean pathAnonymity) {
+    public void setNameAnonymity(boolean pathAnonymity) {
         this.nameAnonymity = pathAnonymity;
     }
 
@@ -91,8 +91,8 @@ public class CompressArgument {
 
     @Override
     public String toString() {
-        return "{\"originPath\":\""+originPath+"\",\n"
-                +"\"packageStorage\":\""+packageStorage+"\",\n"
+        return "{\"sourcePath\":\""+sourcePath+"\",\n"
+                +"\"outPutPathAndName\":\""+outPutPathAndName+"\",\n"
                 +"\"isEncryption\":\""+isEncryption+"\",\n"
                 +"\"nameAnonymity\":\""+nameAnonymity+"\",\n"
                 +"\"password\":\""+password+"\"\n}";
